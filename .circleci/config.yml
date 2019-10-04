@@ -7,13 +7,12 @@ jobs:
     steps:
       - checkout
       - run: yarn install
-      - run: git remote add beedeez https://github.com/beedeez/react-native-multi-slider.git
-      - run: git config --global user.email "morgan.laupies@gmail.com" && git config --global user.name "Morgan Laupies" && git pull beedeez master && git add . && git commit -a -m "[skip ci] circle ci build and publish version patch" --allow-empty
+      - run: git config --global user.email "morgan.laupies@gmail.com" && git config --global user.name "Morgan Laupies" && git pull origin master && git add . && git commit -a -m "[skip ci] circle ci build and publish version patch" --allow-empty
       - run: npm version patch
       - run: npm publish
-      - run: git pull beedeez master
+      - run: git pull origin master
       - run: git commit -a -m "[skip ci] release version" --allow-empty
-      - run: git push --tags beedeez master
+      - run: git push --tags origin master
 
 workflows:
   version: 2
