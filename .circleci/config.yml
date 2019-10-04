@@ -1,0 +1,24 @@
+version: 2
+jobs:
+  deploy:
+    docker:
+      - image: circleci/node:10.16.3
+    working_directory: ~/react-native-multi-slider
+    steps:
+      - checkout
+      - run: yarn install
+      - run: git config --global user.email "morgan.laupies@gmail.com" && git config --global user.name "Morgan Laupies" && git pull origin master && git add . && git commit -a -m "[skip ci] circle ci build and publish version patch" --allow-empty
+      - run: npm version patch
+      - run: npm publish
+      - run: git pull origin master
+      - run: git commit -a -m "[skip ci] release version" --allow-empty
+      - run: git push --tags origin master
+
+workflows:
+  version: 2
+  build_and_deploy:
+    jobs:
+      - deploy:
+          filters:
+            branches:
+              only: master

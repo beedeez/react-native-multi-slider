@@ -1,0 +1,46 @@
+{
+	"name": "@beedeez/react-native-multi-slider",
+	"version": "3.0.4",
+	"description": "Android and iOS supported pure JS slider component with multiple markers for React Native",
+	"main": "MultiSlider.js",
+	"scripts": {},
+	"keywords": [
+		"react-native-multi-slider",
+		"react-component",
+		"react-components",
+		"react",
+		"native",
+		"slider",
+		"multiple",
+		"react-native",
+		"component",
+		"ios",
+		"android"
+	],
+	"peerDependencies": {
+		"react": "*",
+		"react-native": "*"
+	},
+	"devDependencies": {
+		"husky": "^1.1.2",
+		"lint-staged": "^7.3.0",
+		"prettier": "^1.14.3"
+	},
+	"publishConfig": {
+		"registry": "https://npm.pkg.github.com/"
+	},
+	"engines": {
+		"node": ">=10.13.0",
+		"npm": "6.4.1"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/beedeez/react-native-multi-slider.git"
+	},
+	"author": "Beedeez",
+	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/beedeez/react-native-multi-slider/issues"
+	},
+	"homepage": "https://github.com/beedeez/react-native-multi-slider#README"
+}
