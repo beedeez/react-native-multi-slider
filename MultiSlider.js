@@ -5,13 +5,10 @@ import {
   PanResponder,
   View,
   Platform,
-  Dimensions,
   I18nManager,
-  ImageBackground
 } from 'react-native';
 
 import DefaultMarker from './DefaultMarker';
-import DefaultLabel from './DefaultLabel';
 import { createArray, valueToPosition, positionToValue } from './converters';
 
 export default class MultiSlider extends React.Component {
@@ -33,7 +30,6 @@ export default class MultiSlider extends React.Component {
     customMarker: DefaultMarker,
     customMarkerLeft: DefaultMarker,
     customMarkerRight: DefaultMarker,
-    customLabel: DefaultLabel,
     markerOffsetX: 0,
     markerOffsetY: 0,
     sliderLength: 280,
@@ -43,7 +39,6 @@ export default class MultiSlider extends React.Component {
     enabledTwo: true,
     allowOverlap: false,
     snapped: false,
-    vertical: false,
     minMarkerOverlapDistance: 0
   };
 
@@ -85,7 +80,7 @@ export default class MultiSlider extends React.Component {
         onShouldBlockNativeResponder: (evt, gestureState) => true,
       });
     };
-    
+
     this._panResponderBetween = customPanResponder(
       (gestureState) => {
         this.startOne(gestureState);
@@ -186,13 +181,8 @@ export default class MultiSlider extends React.Component {
       return;
     }
 
-    const accumDistance = this.props.vertical
-      ? -gestureState.dy
-      : gestureState.dx;
-    const accumDistanceDisplacement = this.props.vertical
-      ? gestureState.dx
-      : gestureState.dy;
-
+    const accumDistance = gestureState.dx;
+    const accumDistanceDisplacement = gestureState.dy;
     const unconfined = I18nManager.isRTL
       ? this.state.pastOne - accumDistance
       : accumDistance + this.state.pastOne;
@@ -248,13 +238,8 @@ export default class MultiSlider extends React.Component {
       return;
     }
 
-    const accumDistance = this.props.vertical
-      ? -gestureState.dy
-      : gestureState.dx;
-    const accumDistanceDisplacement = this.props.vertical
-      ? gestureState.dx
-      : gestureState.dy;
-
+    const accumDistance = gestureState.dx;
+    const accumDistanceDisplacement = gestureState.dy;
     const unconfined = I18nManager.isRTL
       ? this.state.pastTwo - accumDistance
       : accumDistance + this.state.pastTwo;
@@ -344,7 +329,6 @@ export default class MultiSlider extends React.Component {
   };
 
   render() {
-    const { positionOne, positionTwo } = this.state;
     const {
       selectedStyle,
       unselectedStyle,
@@ -352,8 +336,9 @@ export default class MultiSlider extends React.Component {
       markerOffsetX,
       markerOffsetY,
     } = this.props;
-    const twoMarkers = this.props.values.length == 2; // when allowOverlap, positionTwo could be 0, identified as string '0' and throwing 'RawText 0 needs to be wrapped in <Text>' error
 
+    const { positionOne, positionTwo } = this.state;
+    const twoMarkers = this.props.values.length == 2; // when allowOverlap, positionTwo could be 0, identified as string '0' and throwing 'RawText 0 needs to be wrapped in <Text>' error
     const trackOneLength = positionOne;
     const trackOneStyle = twoMarkers
       ? unselectedStyle
@@ -365,19 +350,14 @@ export default class MultiSlider extends React.Component {
       ? selectedStyle || styles.selectedTrack
       : unselectedStyle;
     const Marker = this.props.customMarker;
-
     const MarkerLeft = this.props.customMarkerLeft;
     const MarkerRight = this.props.customMarkerRight;
     const isMarkersSeparated = this.props.isMarkersSeparated || false;
 
-    const Label = this.props.customLabel;
-
     const {
-      slipDisplacement,
-      height,
-      width,
       borderRadius,
     } = this.props.touchDimensions;
+
     const touchStyle = {
       borderRadius: borderRadius || 0,
     };
@@ -393,12 +373,6 @@ export default class MultiSlider extends React.Component {
     };
 
     const containerStyle = [styles.container, this.props.containerStyle];
-
-    if (this.props.vertical) {
-      containerStyle.push({
-        transform: [{ rotate: '-90deg' }],
-      });
-    }
 
     const body = (<React.Fragment>
       <View style={[styles.fullTrack, { width: sliderLength }]}>
@@ -527,26 +501,10 @@ export default class MultiSlider extends React.Component {
             )}
           </View>
     </React.Fragment>);
-    const leftDiff = (Dimensions.get('window').width - this.props.sliderLength) / 2;
+
     return (
-      <View>
-        <Label
-          leftDiff={leftDiff}
-          oneMarkerValue={this.state.valueOne}
-          twoMarkerValue={this.state.valueTwo}
-          oneMarkerLeftPosition={positionOne}
-          twoMarkerLeftPosition={positionTwo}
-        />
-        {this.props.imageBackgroundSource && 
-          <ImageBackground source={this.props.imageBackgroundSource} style={[{width: '100%', height: '100%'}, containerStyle]}>
-            {body}
-          </ImageBackground>
-        }
-        {!this.props.imageBackgroundSource &&
-          <View style={containerStyle}>
-            {body}
-          </View>
-        }
+      <View style={containerStyle}>
+        {body}
       </View>
     );
   }
