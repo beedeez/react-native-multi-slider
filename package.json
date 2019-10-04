@@ -17,8 +17,6 @@
 		"ios",
 		"android"
 	],
-	"author": "Beedeez",
-	"license": "MIT",
 	"peerDependencies": {
 		"react": "*",
 		"react-native": "*"
@@ -30,5 +28,19 @@
 	},
 	"publishConfig": {
 		"registry": "https://npm.pkg.github.com/"
-	}
+	},
+	"engines": {
+		"node": ">=10.13.0",
+		"npm": "6.4.1"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/beedeez/react-native-multi-slider.git"
+	},
+	"author": "Beedeez",
+	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/beedeez/react-native-multi-slider/issues"
+	},
+	"homepage": "https://github.com/beedeez/react-native-multi-slider#README"
 }
