@@ -20,10 +20,10 @@ export default class MultiSlider extends React.Component {
 		min: 0,
 		max: 10,
 		touchDimensions: {
-			height: 50,
-			width: 50,
+			height: 60,
+			width: 60,
 			borderRadius: 15,
-			slipDisplacement: 200
+			slipDisplacement: 220
 		},
 		customMarker: DefaultMarker,
 		customMarkerLeft: DefaultMarker,
@@ -40,22 +40,20 @@ export default class MultiSlider extends React.Component {
 		minMarkerOverlapDistance: 0
 	};
 
-	constructor(props) {
-		super(props);
+	constructor({ min, max, step, sliderLength, values, optionsArray }) {
+		super();
 
-		this.optionsArray =
-			this.props.optionsArray ||
-			createArray(this.props.min, this.props.max, this.props.step);
-		this.stepLength = this.props.sliderLength / this.optionsArray.length;
+		this.optionsArray = optionsArray || createArray(min, max, step);
+		this.stepLength = sliderLength / this.optionsArray.length;
 
-		var initialValues = this.props.values.map((value) =>
-			valueToPosition(value, this.optionsArray, this.props.sliderLength)
+		const initialValues = values.map((value) =>
+			valueToPosition(value, this.optionsArray, sliderLength)
 		);
 
 		this.state = {
 			pressedOne: true,
-			valueOne: this.props.values[0],
-			valueTwo: this.props.values[1],
+			valueOne: values[0],
+			valueTwo: values[1],
 			pastOne: initialValues[0],
 			pastTwo: initialValues[1],
 			positionOne: initialValues[0],
@@ -64,7 +62,7 @@ export default class MultiSlider extends React.Component {
 	}
 
 	componentWillMount() {
-		var customPanResponder = (start, move, end) => {
+		const customPanResponder = (start, move, end) => {
 			return PanResponder.create({
 				onStartShouldSetPanResponder: (evt, gestureState) => true,
 				onStartShouldSetPanResponderCapture: (evt, gestureState) => true,
@@ -346,6 +344,21 @@ export default class MultiSlider extends React.Component {
 		);
 	};
 
+	setMarkerOneRef = (ref) => {
+		if (ref) {
+			this._markerOne = ref;
+		}
+	};
+
+	setMarkerTwoRef = (ref) => {
+		if (ref) {
+			this._markerTwo = ref;
+		}
+	};
+
+	_markerOne = null;
+	_markerTwo = null;
+
 	render() {
 		const {
 			selectedStyle,
@@ -390,8 +403,8 @@ export default class MultiSlider extends React.Component {
 
 		const containerStyle = [styles.container, this.props.containerStyle];
 
-		const body = (
-			<React.Fragment>
+		return (
+			<View style={containerStyle}>
 				<View style={[styles.fullTrack, { width: sliderLength }]}>
 					<View
 						style={[
@@ -401,6 +414,7 @@ export default class MultiSlider extends React.Component {
 							{ width: trackOneLength }
 						]}
 					/>
+
 					<View
 						style={[
 							styles.track,
@@ -410,6 +424,7 @@ export default class MultiSlider extends React.Component {
 						]}
 						{...(twoMarkers ? this._panResponderBetween.panHandlers : {})}
 					/>
+
 					{twoMarkers && (
 						<View
 							style={[
@@ -420,6 +435,7 @@ export default class MultiSlider extends React.Component {
 							]}
 						/>
 					)}
+
 					<View
 						style={[
 							styles.markerContainer,
@@ -429,7 +445,7 @@ export default class MultiSlider extends React.Component {
 						]}>
 						<View
 							style={[styles.touch, touchStyle]}
-							ref={(component) => (this._markerOne = component)}
+							ref={this.setMarkerOneRef}
 							{...this._panResponderOne.panHandlers}>
 							{isMarkersSeparated === false ? (
 								<Marker
@@ -456,6 +472,7 @@ export default class MultiSlider extends React.Component {
 							)}
 						</View>
 					</View>
+
 					{twoMarkers && positionOne !== this.props.sliderLength && (
 						<View
 							style={[
@@ -465,7 +482,7 @@ export default class MultiSlider extends React.Component {
 							]}>
 							<View
 								style={[styles.touch, touchStyle]}
-								ref={(component) => (this._markerTwo = component)}
+								ref={this.setMarkerTwoRef}
 								{...this._panResponderTwo.panHandlers}>
 								{isMarkersSeparated === false ? (
 									<Marker
@@ -494,10 +511,8 @@ export default class MultiSlider extends React.Component {
 						</View>
 					)}
 				</View>
-			</React.Fragment>
+			</View>
 		);
-
-		return <View style={containerStyle}>{body}</View>;
 	}
 }
 
