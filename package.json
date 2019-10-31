@@ -1,6 +1,6 @@
 {
 	"name": "@beedeez/react-native-multi-slider",
-	"version": "3.0.8",
+	"version": "4.0.0",
 	"description": "Android and iOS supported pure JS slider component with multiple markers for React Native",
 	"main": "MultiSlider.js",
 	"scripts": {},

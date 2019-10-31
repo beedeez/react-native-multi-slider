@@ -37,7 +37,8 @@ export default class MultiSlider extends React.Component {
 		enabledTwo: true,
 		allowOverlap: false,
 		snapped: false,
-		minMarkerOverlapDistance: 0
+		minMarkerOverlapDistance: 0,
+		allowTrackTouch: false
 	};
 
 	constructor({ min, max, step, sliderLength, values, optionsArray }) {
@@ -62,7 +63,9 @@ export default class MultiSlider extends React.Component {
 	}
 
 	componentWillMount() {
-		const customPanResponder = (start, move, end) => {
+		const twoMarkers = this.props.values.length == 2; // when allowOverlap, positionTwo could be 0, identified as string '0' and throwing 'RawText 0 needs to be wrapped in <Text>' error
+
+		var customPanResponder = (start, move, end) => {
 			return PanResponder.create({
 				onStartShouldSetPanResponder: (evt, gestureState) => true,
 				onStartShouldSetPanResponderCapture: (evt, gestureState) => true,
@@ -102,6 +105,83 @@ export default class MultiSlider extends React.Component {
 			this.moveTwo,
 			this.endTwo
 		);
+
+		if (twoMarkers || !this.props.allowTrackTouch) {
+			this._panResponderSingleMarkerTrack = {};
+		} else {
+			this._panResponderSingleMarkerTrack = PanResponder.create({
+				onStartShouldSetPanResponder: (event, gestureState) => true,
+				onStartShouldSetPanResponderCapture: (event, gestureState) => true,
+				onMoveShouldSetPanResponder: (event, gestureState) => false,
+				onMoveShouldSetPanResponderCapture: (event, gestureState) => false,
+				onPanResponderGrant: (event, gestureState) => false,
+				onPanResponderMove: (event, gestureState) => false,
+				onPanResponderRelease: ({ nativeEvent }, gestureState) => {
+					const { locationX, pageX } = nativeEvent;
+					const unconfined =
+						pageX > this.state.pageX
+							? this.state.positionOne + locationX
+							: locationX;
+
+					var bottom = 0;
+					var trueTop =
+						this.state.positionTwo -
+						(this.props.allowOverlap
+							? 0
+							: this.props.minMarkerOverlapDistance > 0
+							? this.props.minMarkerOverlapDistance
+							: this.stepLength);
+					var top = trueTop === 0 ? 0 : trueTop || this.props.sliderLength;
+					var confined =
+						unconfined < bottom ? bottom : unconfined > top ? top : unconfined;
+
+					const value = positionToValue(
+						confined,
+						this.optionsArray,
+						this.props.sliderLength
+					);
+
+					const snapped = valueToPosition(
+						value,
+						this.optionsArray,
+						this.props.sliderLength
+					);
+
+					if (value !== this.state.valueOne) {
+						this.setState(
+							{
+								positionOne: snapped,
+								valueOne: value
+							},
+							() => {
+								const change = [this.state.valueOne];
+
+								if (this.state.valueTwo) {
+									change.push(this.state.valueTwo);
+								}
+
+								this.props.onValuesChange(change);
+
+								this.props.onMarkersPosition([
+									this.state.positionOne,
+									this.state.positionTwo
+								]);
+
+								this.setState(
+									{
+										pastOne: this.state.positionOne,
+										pageX
+									},
+									() => {
+										this.props.onValuesChangeFinish(change);
+									}
+								);
+							}
+						);
+					}
+				}
+			});
+		}
 	}
 
 	componentWillReceiveProps(nextProps) {
@@ -405,7 +485,9 @@ export default class MultiSlider extends React.Component {
 
 		return (
 			<View style={containerStyle}>
-				<View style={[styles.fullTrack, { width: sliderLength }]}>
+				<View
+					style={[styles.fullTrack, { width: sliderLength }]}
+					{...this._panResponderSingleMarkerTrack.panHandlers}>
 					<View
 						style={[
 							styles.track,
