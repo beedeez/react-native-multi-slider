@@ -38,7 +38,8 @@ export default class MultiSlider extends React.Component {
 		allowOverlap: false,
 		snapped: false,
 		minMarkerOverlapDistance: 0,
-		allowTrackTouch: false
+		allowTrackTouch: false,
+		enabled: true,
 	};
 
 	constructor({ min, max, step, sliderLength, values, optionsArray }) {
@@ -117,6 +118,10 @@ export default class MultiSlider extends React.Component {
 				onPanResponderGrant: (event, gestureState) => false,
 				onPanResponderMove: (event, gestureState) => false,
 				onPanResponderRelease: ({ nativeEvent }, gestureState) => {
+					if (!this.props.enabled) {
+						return;
+					}
+
 					const { locationX, pageX } = nativeEvent;
 					const unconfined =
 						pageX > this.state.pageX
@@ -241,7 +246,7 @@ export default class MultiSlider extends React.Component {
 	}
 
 	startOne = () => {
-		if (this.props.enabledOne) {
+		if (this.props.enabledOne && this.props.enabled) {
 			this.props.onValuesChangeStart();
 			this.setState({
 				onePressed: !this.state.onePressed
@@ -250,7 +255,7 @@ export default class MultiSlider extends React.Component {
 	};
 
 	startTwo = () => {
-		if (this.props.enabledTwo) {
+		if (this.props.enabledTwo && this.props.enabled) {
 			this.props.onValuesChangeStart();
 			this.setState({
 				twoPressed: !this.state.twoPressed
@@ -259,7 +264,7 @@ export default class MultiSlider extends React.Component {
 	};
 
 	moveOne = (gestureState) => {
-		if (!this.props.enabledOne) {
+		if (!this.props.enabledOne || !this.props.enabled) {
 			return;
 		}
 
@@ -322,7 +327,7 @@ export default class MultiSlider extends React.Component {
 	};
 
 	moveTwo = (gestureState) => {
-		if (!this.props.enabledTwo) {
+		if (!this.props.enabledTwo || !this.props.enabled) {
 			return;
 		}
 
@@ -464,6 +469,8 @@ export default class MultiSlider extends React.Component {
 		const MarkerLeft = this.props.customMarkerLeft;
 		const MarkerRight = this.props.customMarkerRight;
 		const isMarkersSeparated = this.props.isMarkersSeparated || false;
+		const isMarkerOneEnabled = this.props.enabledOne && this.props.enabled;
+		const isMarkerTwoEnabled = this.props.enabledTwo && this.props.enabled;
 
 		const { borderRadius } = this.props.touchDimensions;
 
@@ -482,6 +489,7 @@ export default class MultiSlider extends React.Component {
 		};
 
 		const containerStyle = [styles.container, this.props.containerStyle];
+
 
 		return (
 			<View style={containerStyle}>
@@ -531,7 +539,7 @@ export default class MultiSlider extends React.Component {
 							{...this._panResponderOne.panHandlers}>
 							{isMarkersSeparated === false ? (
 								<Marker
-									enabled={this.props.enabledOne}
+									enabled={isMarkerOneEnabled}
 									pressed={this.state.onePressed}
 									markerStyle={this.props.markerStyle}
 									pressedMarkerStyle={this.props.pressedMarkerStyle}
@@ -542,7 +550,7 @@ export default class MultiSlider extends React.Component {
 								/>
 							) : (
 								<MarkerLeft
-									enabled={this.props.enabledOne}
+									enabled={isMarkerOneEnabled}
 									pressed={this.state.onePressed}
 									markerStyle={this.props.markerStyle}
 									pressedMarkerStyle={this.props.pressedMarkerStyle}
@@ -568,23 +576,23 @@ export default class MultiSlider extends React.Component {
 								{...this._panResponderTwo.panHandlers}>
 								{isMarkersSeparated === false ? (
 									<Marker
+										enabled={isMarkerTwoEnabled}
 										pressed={this.state.twoPressed}
 										markerStyle={this.props.markerStyle}
 										pressedMarkerStyle={this.props.pressedMarkerStyle}
 										disabledMarkerStyle={this.props.disabledMarkerStyle}
 										currentValue={this.state.valueTwo}
-										enabled={this.props.enabledTwo}
 										valuePrefix={this.props.valuePrefix}
 										valueSuffix={this.props.valueSuffix}
 									/>
 								) : (
 									<MarkerRight
+										enabled={isMarkerTwoEnabled}
 										pressed={this.state.twoPressed}
 										markerStyle={this.props.markerStyle}
 										pressedMarkerStyle={this.props.pressedMarkerStyle}
 										disabledMarkerStyle={this.props.disabledMarkerStyle}
 										currentValue={this.state.valueTwo}
-										enabled={this.props.enabledTwo}
 										valuePrefix={this.props.valuePrefix}
 										valueSuffix={this.props.valueSuffix}
 									/>

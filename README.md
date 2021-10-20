@@ -88,6 +88,7 @@ Feel free to contribute to this part of the documentation.
 | {container/track/selected/unselected/ markerContainer/marker/pressedMarker} Style |  | style object | Styles for the slider |
 | valuePrefix |  | string | Prefix added to the value. |
 | valueSuffix |  | string | Suffix added to the value. |
+| enabled | true | boolean | Enables all cursors |
 | enabledOne | true | boolean | Enables the first cursor |
 | enabledTwo | true | boolean | Enables the second cursor |
 | onToggleOne | undefined | function callback | Listener when first cursor toggles. |
